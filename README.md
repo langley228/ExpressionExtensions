@@ -137,7 +137,7 @@ var merged2 = expr2.Merge<int, string>();
 
 ## EF Core 範例
 
-結合 ExpressionExtensions 與 Entity Framework Core，實現動態查詢條件組合：
+結合 ExpressionExtensions 與 Entity Framework Core（以 SQL Server 為例），實現動態查詢條件組合，並印出 SQL、參數與查詢結果：
 
 ```csharp
 using System;
@@ -158,7 +158,7 @@ public class SampleDbContext : DbContext
     public DbSet<Person> People => Set<Person>();
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseInMemoryDatabase("TestDb");
+        => optionsBuilder.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=TestDb;Trusted_Connection=True;");
 }
 
 class Program
@@ -166,6 +166,8 @@ class Program
     static void Main()
     {
         using var db = new SampleDbContext();
+        db.Database.EnsureDeleted();
+        db.Database.EnsureCreated();
         db.People.AddRange(
             new Person { Name = "Alice", Age = 20 },
             new Person { Name = "Bob", Age = 30 },
@@ -191,10 +193,11 @@ class Program
             Console.WriteLine($"{person.Name} ({person.Age})");
         }
         // 輸出：
-        // SELECT "p"."Id", "p"."Name", "p"."Age"
-        // FROM "People" AS "p"
-        // WHERE (("p"."Age" > 20) AND ("p"."Name" = 'Bob'))
+        // SELECT [p].[Id], [p].[Name], [p].[Age]
+        // FROM [People] AS [p]
+        // WHERE ([p].[Age] > 20) AND ([p].[Name] = N'Bob')
         // Bob (30)
     }
 }
 ```
+> **注意**：請先安裝 NuGet 套件 `Microsoft.EntityFrameworkCore.SqlServer`，並確保本機有 SQL Server 或 LocalDB 環境。
