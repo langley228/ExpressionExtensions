@@ -135,22 +135,6 @@ var merged2 = expr2.Merge<int, string>();
 
 ---
 
-## 進階功能
-
-### 參數取代（Parameter Replace）
-
-可用於將 Lambda 內部的參數替換為新的 ParameterExpression，常用於動態組合 Expression。
-
-```csharp
-var paramX = Expression.Parameter(typeof(int), "x");
-var paramY = Expression.Parameter(typeof(int), "y");
-Expression<Func<int, bool>> expr = z => z > 0;
-var replaced = ParameterReplacer.Replace(expr, expr.Parameters[0], paramY);
-// y => y > 0
-```
-
----
-
 ## EF Core 範例
 
 結合 ExpressionExtensions 與 Entity Framework Core，實現動態查詢條件組合：
