@@ -179,12 +179,22 @@ class Program
         var combined = ageGt20.AndAlso(nameIsBob);
 
         // 查詢
-        var result = db.People.Where(combined).ToList();
+        var query = db.People.Where(combined);
+
+        // 印出 SQL 及參數
+        Console.WriteLine(query.ToQueryString());
+
+        // 執行查詢並印出結果
+        var result = query.ToList();
         foreach (var person in result)
         {
             Console.WriteLine($"{person.Name} ({person.Age})");
         }
-        // 輸出：Bob (30)
+        // 輸出：
+        // SELECT "p"."Id", "p"."Name", "p"."Age"
+        // FROM "People" AS "p"
+        // WHERE (("p"."Age" > 20) AND ("p"."Name" = 'Bob'))
+        // Bob (30)
     }
 }
 ```
