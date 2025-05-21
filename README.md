@@ -157,15 +157,22 @@ public class SampleDbContext : DbContext
 {
     public DbSet<Person> People => Set<Person>();
 
+    private readonly string _connectionString;
+    public SampleDbContext(string connectionString)
+    {
+        _connectionString = connectionString;
+    }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=TestDb;Trusted_Connection=True;");
+        => optionsBuilder.UseSqlServer(_connectionString);
 }
 
 class Program
 {
     static void Main()
     {
-        using var db = new SampleDbContext();
+        var connectionString = "Server=(localdb)\\mssqllocaldb;Database=TestDb;Trusted_Connection=True;";
+        using var db = new SampleDbContext(connectionString);
         db.Database.EnsureDeleted();
         db.Database.EnsureCreated();
         db.People.AddRange(
@@ -200,4 +207,3 @@ class Program
     }
 }
 ```
-> **注意**：請先安裝 NuGet 套件 `Microsoft.EntityFrameworkCore.SqlServer`，並確保本機有 SQL Server 或 LocalDB 環境。
